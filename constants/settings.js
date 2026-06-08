@@ -26,5 +26,4 @@ export const APP_INFO = {
   version: '1.0.0',
   developer: '孙瑞',
   email: 'sunr20050503@163.com',
-  company: '盐城小寒科技有限责任公司',
 };

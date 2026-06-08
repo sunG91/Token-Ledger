@@ -2,9 +2,9 @@
 
 <img src="static/logo.png" alt="Token随手记" width="96" />
 
-# Token随手记 · Token Ledger
+# Token随手记
 
-**面向开发者与团队的 AI Token 消耗记账工具**
+**面向开发者的 AI Token 消耗记账工具**
 
 清晰掌握各平台调用成本、预算与节省情况 · 本地优先 · 开箱即用
 
@@ -15,7 +15,9 @@
 [![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20微信小程序%20%7C%20H5-6366f1?style=flat-square)](docs/依赖选型.md)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-orange?style=flat-square)](LICENSE.txt)
 
-[简体中文](#-产品简介) · [English](#-overview) · [界面预览](#-界面预览) · [快速开始](#-快速开始) · [合作联系](#-合作联系)
+**中文** · [**English**](README.en.md)
+
+[产品简介](#-产品简介) · [界面预览](#-界面预览) · [快速开始](#-快速开始) · [联系作者](#-联系作者)
 
 </div>
 
@@ -36,20 +38,6 @@
 | 🌐 **中英双语**     | 完整 i18n 支持，浅色 / 暗色主题自由切换                     |
 
 > **版本说明：** 云端版本暂不对公众开放。当前推荐使用**本地模式**——数据留在本机，核心功能均已可用，日常使用完全够用。
-
----
-
-## 🌍 Overview
-
-**Token Ledger** helps developers track AI token usage and costs across platforms with clarity and control.
-
-- **Records** — AI assistant or manual entry for token bookkeeping
-- **Bills** — Filter by time, vendor, and model; inspect detailed usage
-- **Statistics** — Trends, comparisons, and rankings for cost decisions
-- **Profile** — API keys, backup, local mode, and persona settings
-- **Local-first** — Data stays on your device; core features work offline
-
-> **Release status:** The cloud edition is not publicly available yet. **Local mode** is recommended for everyday use.
 
 ---
 
@@ -192,7 +180,7 @@ npm run check
 
 本软件及其文档、界面设计、图标、源代码与相关知识产权，均受中华人民共和国著作权法、计算机软件保护条例及其他适用法律保护。
 
-- **著作权人：** 孙瑞
+- **著作权人：** 孙瑞（个人开发者）
 - **性质：** 商业产品，开发者保留全部知识产权及商业化运营权利
 - **许可：** 本项目采用 [GNU AGPL v3](LICENSE.txt) 许可证
 
@@ -200,16 +188,16 @@ npm run check
 
 ---
 
-## 🤝 合作联系
+## 🤝 联系作者
 
-如有合作意向或对项目有任何想法与建议，欢迎与我们联系：
+如有合作意向或对项目有任何想法与建议，欢迎联系：
 
-|            |                                                                          |
-| ---------- | ------------------------------------------------------------------------ |
-| **开发者** | 孙瑞                                                                     |
-| **公司**   | 盐城小寒科技有限责任公司                                                 |
-| **邮箱**   | [sunr20050503@163.com](mailto:sunr20050503@163.com)                      |
-| **仓库**   | [github.com/sunG91/Token-Ledger](https://github.com/sunG91/Token-Ledger) |
+|              |                                                                          |
+| ------------ | ------------------------------------------------------------------------ |
+| **开发者**   | 孙瑞（个人开发者）                                                       |
+| **邮箱**     | [sunr20050503@163.com](mailto:sunr20050503@163.com)                      |
+| **仓库**     | [github.com/sunG91/Token-Ledger](https://github.com/sunG91/Token-Ledger) |
+| **英文文档** | [README.en.md](README.en.md)                                             |
 
 ---
 
