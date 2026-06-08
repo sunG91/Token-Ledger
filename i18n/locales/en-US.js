@@ -634,7 +634,7 @@ export default {
     ],
     legalTitle: 'Legal Notice',
     legalIntro:
-      'This software, including its documentation, UI design, icons, and source code, is protected by copyright law from the moment of creation. The copyright owner has not yet filed for software copyright registration; registration is optional and does not affect the existence of copyright.',
+      'This software, including its documentation, UI design, icons, and source code, is protected under applicable copyright law.',
     legalItems: [
       'Copyright owner: Sun Rui (independent developer). Without written consent, no one may plagiarize, misappropriate, or falsely claim this project, or copy, modify, distribute, or reverse-engineer it for competing products; authorized use under AGPL is not restricted.',
       'This is a commercial product. The developer reserves all IP and monetization rights, including subscriptions and premium services.',

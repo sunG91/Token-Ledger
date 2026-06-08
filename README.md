@@ -178,7 +178,7 @@ We value your privacy:
 
 ## 📄 Legal Notice
 
-This software, including its documentation, UI design, icons, and source code, is protected by copyright law from the moment of creation. The copyright owner has **not yet filed for software copyright registration**; registration is optional and does not affect the existence of copyright.
+This software, including its documentation, UI design, icons, and source code, is protected under applicable copyright law.
 
 - **Copyright owner:** Sun Rui (independent developer)
 - **Nature:** Commercial product; the developer reserves all IP and monetization rights
