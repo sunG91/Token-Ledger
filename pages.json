@@ -1,0 +1,174 @@
+{
+  "easycom": {
+    "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue",
+    "^app-tab-bar$": "@/components/AppTabBar/AppTabBar.vue",
+    "^page-tab-bar$": "@/components/base/PageTabBar/PageTabBar.vue",
+    "^api-key-avatar$": "@/components/api-keys/ApiKeyAvatar/ApiKeyAvatar.vue",
+    "^platform-icon$": "@/components/base/PlatformIcon/PlatformIcon.vue"
+  },
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/records/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/bills/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "账单明细"
+      }
+    },
+    {
+      "path": "pages/stats/index",
+      "style": {
+        "navigationStyle": "custom",
+        "app-plus": {
+          "titleNView": false
+        }
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/assistant/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/api-keys/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "API Key 管理",
+        "app-plus": {
+          "titleNView": false
+        }
+      }
+    },
+    {
+      "path": "pages/api-keys/add",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "添加 API Key",
+        "app-plus": {
+          "titleNView": false
+        }
+      }
+    },
+    {
+      "path": "pages/api-keys/detail",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "API Key 详情",
+        "app-plus": {
+          "titleNView": false
+        }
+      }
+    },
+    {
+      "path": "pages/settings/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "设置"
+      }
+    },
+    {
+      "path": "pages/settings/theme",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "个性样式"
+      }
+    },
+    {
+      "path": "pages/settings/language",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "语言"
+      }
+    },
+    {
+      "path": "pages/settings/about",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "关于与帮助"
+      }
+    },
+    {
+      "path": "pages/settings/local-mode",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "本地模式"
+      }
+    },
+    {
+      "path": "pages/settings/chat-model",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "对话模型"
+      }
+    },
+    {
+      "path": "pages/settings/data-clear",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "数据清理"
+      }
+    },
+    {
+      "path": "pages/settings/persona",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "人设模式"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Token随手记",
+    "navigationBarBackgroundColor": "#F8F9FE",
+    "backgroundColor": "#F8F9FE"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#636E72",
+    "selectedColor": "#6C5CE7",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/records/index",
+        "text": "记录"
+      },
+      {
+        "pagePath": "pages/bills/index",
+        "text": "账单"
+      },
+      {
+        "pagePath": "pages/stats/index",
+        "text": "统计"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "uniIdRouter": {}
+}

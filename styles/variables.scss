@@ -1,0 +1,75 @@
+/**
+ * Token随手记 — 设计 Token
+ * 语义色使用 CSS 变量，由页面根节点 appShellStyle 注入，支持黑夜模式全局切换
+ */
+
+// 品牌色
+$color-primary: #6c5ce7;
+$color-secondary: #0984e3;
+$color-primary-gradient: linear-gradient(135deg, #6c5ce7 0%, #0984e3 100%);
+
+// 背景（随主题变化）
+$color-bg-page: var(--app-page-bg, #f8f9fe);
+$color-bg-card: var(--app-card-bg, #ffffff);
+$color-bg-muted: var(--app-muted-bg, #f1f2f6);
+
+// 文字（随主题变化）
+$color-text-primary: var(--app-text-primary, #2d3436);
+$color-text-secondary: var(--app-text-secondary, #636e72);
+$color-text-placeholder: var(--app-text-placeholder, #b2bec3);
+$color-text-inverse: #fff;
+
+// 表面 / 渐变（随主题变化）
+$gradient-highlight-card: var(
+  --app-gradient-highlight,
+  linear-gradient(145deg, #ebe8ff 0%, #f5f3ff 100%)
+);
+$color-surface-glass: var(--app-surface-glass, rgba(255, 255, 255, 0.92));
+$color-tab-pill-bg: var(--app-tab-pill-bg, rgba(255, 255, 255, 0.88));
+$color-avatar-bg: var(
+  --app-avatar-bg,
+  linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, rgba(9, 132, 227, 0.15) 100%)
+);
+$color-icon-well: var(--app-icon-well, rgba(255, 255, 255, 0.55));
+
+// 状态色
+$color-success: #00b894;
+$color-warning: #fdcb6e;
+$color-danger: #d63031;
+$color-info: #74b9ff;
+$color-disabled: #dfe6e9;
+
+// 圆角
+$radius-card: 32rpx;
+$radius-button: 16rpx;
+$radius-tag: 8rpx;
+$radius-circle: 50%;
+
+// 阴影（随主题变化）
+$shadow-card: var(--app-shadow-card, 0 4rpx 24rpx rgba(108, 92, 231, 0.08));
+$shadow-button: 0 8rpx 20rpx rgba(9, 132, 227, 0.25);
+
+// 间距
+$spacing-xs: 8rpx;
+$spacing-sm: 16rpx;
+$spacing-md: 24rpx;
+$spacing-lg: 32rpx;
+$spacing-xl: 48rpx;
+
+// 字号
+$font-size-xs: 22rpx;
+$font-size-sm: 24rpx;
+$font-size-base: 28rpx;
+$font-size-md: 32rpx;
+$font-size-lg: 36rpx;
+$font-size-xl: 48rpx;
+$font-size-xxl: 56rpx;
+
+// 字重
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// 底部安全区（配合 env(safe-area-inset-bottom) 使用）
+$safe-area-bottom: env(safe-area-inset-bottom);

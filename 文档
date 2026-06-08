@@ -1,0 +1,614 @@
+# Token随手记 — 开发文档
+
+> 版本：v1.0  
+> 更新日期：2026-06-06  
+> 适用对象：产品、前端、后端、测试
+
+---
+
+## 1. 项目概述
+
+### 1.1 产品定位
+
+**Token随手记** 是一款面向 AI 开发者和重度使用者的 **Token 消耗记账工具**，帮助用户：
+
+- 汇总各平台（DeepSeek、OpenAI、Claude、Kimi、通义千问等）的 Token 用量与费用
+- 通过 API Key 绑定自动同步余额与用量
+- 用自然语言查询消耗（AI 记账助手）
+- 查看账单明细、趋势统计，控制月度预算
+
+### 1.2 MVP 范围（第一版必做）
+
+| 模块         | 优先级 | 说明                         |
+| ------------ | ------ | ---------------------------- |
+| 首页概览     | P0     | 本月消耗、剩余额度、最近记录 |
+| 手动记账     | P0     | 无 API Key 时也能录入        |
+| API Key 管理 | P0     | 绑定、启停、余额展示         |
+| 账单明细     | P0     | 按时间/平台筛选、模型占比    |
+| 使用统计     | P1     | 趋势图、模型排行             |
+| AI 记账助手  | P1     | 自然语言查账（可接自家 LLM） |
+| 个人中心     | P1     | 备份、云同步、会员占位       |
+| 会员/支付    | P2     | 第二版再做                   |
+
+### 1.3 非目标（第一版不做）
+
+- 多用户协作 / 团队账单
+- 自动从 Cursor、IDE 插件抓包记账
+- 复杂财务对账、发票管理
+
+---
+
+## 2. 技术选型（已确定：uni-app）
+
+> 详细依赖说明见 [`docs/依赖选型.md`](docs/依赖选型.md)  
+> 跨端编码规范见 [`docs/代码规范.md`](docs/代码规范.md)
+
+### 2.1 客户端
+
+| 方案 | 目标平台 | 状态 |
+| ---- | -------- | ---- |
+| **uni-app (Vue 2)** | Android / iOS / 微信小程序 / H5 | **已采用** |
+
+**UI 框架**：uView UI 2  
+**图表**：qiun-data-charts（uni_modules 插件）  
+**状态管理**：Vuex 3  
+**网络请求**：luch-request（封装 uni.request）  
+**本地存储**：uni.storage API  
+**代码检查**：ESLint + Prettier + Stylelint + Husky（`npm run check`）
+
+### 2.2 后端
+
+| 组件     | 推荐                                   |
+| -------- | -------------------------------------- |
+| 运行时   | Node.js (NestJS) 或 Go (Gin)           |
+| 数据库   | PostgreSQL（主库）+ Redis（缓存/队列） |
+| 对象存储 | 阿里云 OSS / 腾讯云 COS（备份文件）    |
+| 任务队列 | BullMQ / Asynq（定时拉取各平台余额）   |
+
+### 2.3 第三方
+
+- **登录**：微信一键登录 + 手机号（国内）；Apple Sign In（iOS 必接）
+- **AI 助手**：DeepSeek API / 通义千问（成本低、中文好）
+- **推送**：极光 / 个推（额度预警）
+- **监控**：Sentry（崩溃）+ 自建埋点
+
+---
+
+## 3. 信息架构与页面说明
+
+对应 UI 原型 6 屏 + 底部 5 Tab：
+
+```
+底部导航：首页 | 记录 | 账单 | 统计 | 我的
+```
+
+### 3.1 首页（Token随手记）
+
+**功能**
+
+- 顶部：搜索（跳转全局搜索）、通知（额度/同步异常）
+- 卡片 1：**本月已消耗** — `12,450 tokens · ¥124.50`
+- 卡片 2：**本月剩余额度** — `87,550 tokens · ¥875.50`（来自用户设置的月度预算）
+- 列表：**最近消耗**（模型名、Token 数、日期）
+- 按钮：**去记账**、**绑定 API Key**
+
+**数据来源**
+
+```
+本月已消耗 = SUM(records.token_count) WHERE month = current
+剩余额度   = user.monthly_quota_tokens - 本月已消耗
+金额       = token_count × 模型单价（来自 price_table）
+```
+
+**接口**
+
+```
+GET /api/v1/dashboard/summary
+GET /api/v1/records/recent?limit=5
+```
+
+---
+
+### 3.2 AI 记账助手
+
+**功能**
+
+- 对话式查账：「DeepSeek 今天用了多少 Token？」
+- 结构化回复卡片：Token 数、金额、调用次数、均值
+- 快捷 chips：「生成本月报告」「消耗最多的模型」
+- 输入框 + 语音（可选 P2）
+
+**实现思路**
+
+1. 用户消息 → 后端 **意图识别**（Function Calling）
+2. 调用内部统计 API 取数
+3. LLM 组织自然语言 + 返回结构化 `card` 字段供前端渲染
+
+**预置 Tool 定义**
+
+| Tool                   | 参数              | 返回                     |
+| ---------------------- | ----------------- | ------------------------ |
+| `query_usage_by_model` | model, date_range | tokens, cost, call_count |
+| `query_monthly_report` | month             | 汇总 + Top 模型          |
+| `query_ranking`        | period, order     | 模型排行                 |
+
+**接口**
+
+```
+POST /api/v1/assistant/chat
+Body: { "message": "...", "session_id": "..." }
+Response: { "reply": "...", "card": { ... }, "suggestions": [...] }
+```
+
+---
+
+### 3.3 账单明细
+
+**功能**
+
+- 筛选：时间（本月/自定义）、平台（全部/单平台）
+- 汇总条：本月总费用、总 Token
+- **按模型统计**：环形图 + 图例（占比、金额）
+- **账单记录**：按日期分组，单条含模型版本、时间、Token、费用
+
+**接口**
+
+```
+GET /api/v1/bills/summary?month=2026-03&platform=all
+GET /api/v1/bills/records?month=2026-03&platform=deepseek&page=1
+GET /api/v1/bills/by-model?month=2026-03
+```
+
+**前端组件**
+
+
+- `DonutChart`：模型占比
+- `GroupedList`：按 `date` 分组 FlatList
+
+---
+
+### 3.4 使用统计
+
+**Tab**：总览 | 趋势 | 对比
+
+**总览**
+
+- 三指标：总 Token、总费用、总调用次数
+- 折线图：日消耗趋势
+- 模型用量排行（横向进度条）
+
+**趋势**
+
+- 可选粒度：日 / 周 / 月
+- 多模型叠加折线（可选 P2）
+
+**对比**
+
+- 本月 vs 上月 柱状对比
+
+**接口**
+
+```
+GET /api/v1/stats/overview?month=2026-03
+GET /api/v1/stats/trend?month=2026-03&granularity=day
+GET /api/v1/stats/ranking?month=2026-03&limit=10
+GET /api/v1/stats/compare?month=2026-03&compare_month=2026-02
+```
+
+---
+
+### 3.5 API Key 管理
+
+**功能**
+
+- 列表：平台 Logo、脱敏 Key、余额 Token、到期日、开关
+- 新增 / 编辑 / 删除 Key
+- 底部使用建议（静态文案）
+
+**安全要求（必做）**
+
+- Key **仅服务端存储**，AES-256-GCM 加密，密钥放 KMS/环境变量
+- 客户端只显示 `sk-****abcd` 后四位
+- 传输全程 HTTPS；日志禁止打印完整 Key
+- 用户关闭开关后停止拉取，不删除数据
+
+**同步策略**
+
+| 平台     | 余额来源                | 频率             |
+| -------- | ----------------------- | ---------------- |
+| OpenAI   | Billing API / Usage API | 每 6h + 手动刷新 |
+| DeepSeek | 官方余额接口            | 每 6h            |
+| Claude   | Console API（若有）     | 每 12h           |
+| 无 API   | 仅手动记账              | —                |
+
+**接口**
+
+```
+GET    /api/v1/api-keys
+POST   /api/v1/api-keys          { platform, api_key, alias? }
+PATCH  /api/v1/api-keys/:id      { enabled, alias? }
+DELETE /api/v1/api-keys/:id
+POST   /api/v1/api-keys/:id/sync
+```
+
+---
+
+### 3.6 我的（个人中心）
+
+**功能**
+
+- 头像、昵称、ID
+- Pro 会员横幅（第一版可跳转占位页）
+- 菜单：数据备份、云同步、会员权益、设置
+- 底部卡片：「本月已节省 ¥45.20」（基于预算 vs 实际，算法见下）
+
+**节省金额算法（示例）**
+
+```
+saved = MAX(0, 用户预估支出 - 实际支出)
+预估支出 = 上月同期费用 × 1.0 或用户自定义预算
+```
+
+**接口**
+
+```
+GET  /api/v1/user/profile
+POST /api/v1/user/backup/export
+POST /api/v1/user/backup/import
+PATCH /api/v1/user/settings   { cloud_sync, monthly_quota, currency }
+```
+
+---
+
+### 3.7 记录 Tab（原型未单独展示，需补充）
+
+**手动记账表单**
+
+| 字段     | 类型     | 必填           |
+| -------- | -------- | -------------- |
+| 平台     | 枚举     | 是             |
+| 模型     | 字符串   | 是             |
+| Token 数 | 整数     | 是             |
+| 费用     | decimal  | 否（可自动算） |
+| 备注     | 文本     | 否             |
+| 时间     | datetime | 否，默认现在   |
+
+```
+POST /api/v1/records
+GET  /api/v1/records?page=1&platform=&start=&end=
+PUT  /api/v1/records/:id
+DELETE /api/v1/records/:id
+```
+
+---
+
+## 4. 数据模型
+
+### 4.1 ER 关系（简图）
+
+```
+User 1──N ApiKey
+User 1──N UsageRecord
+User 1──N AssistantSession
+Platform 1──N ModelPrice
+UsageRecord N──1 Platform
+ApiKey N──1 Platform
+```
+
+### 4.2 核心表结构
+
+#### users
+
+| 字段                 | 类型          | 说明                         |
+| -------------------- | ------------- | ---------------------------- |
+| id                   | UUID          | PK                           |
+| nickname             | VARCHAR(64)   | 昵称                         |
+| avatar_url           | TEXT          | 头像                         |
+| monthly_quota_tokens | BIGINT        | 月度 Token 预算，默认 100000 |
+| monthly_quota_amount | DECIMAL(10,2) | 月度金额预算                 |
+| currency             | CHAR(3)       | CNY                          |
+| cloud_sync_enabled   | BOOLEAN       | 云同步                       |
+| created_at           | TIMESTAMPTZ   |                              |
+
+#### platforms
+
+| 字段       | 类型        | 说明                                     |
+| ---------- | ----------- | ---------------------------------------- |
+| id         | VARCHAR(32) | deepseek / openai / claude / kimi / qwen |
+| name       | VARCHAR(64) | 展示名                                   |
+| logo_url   | TEXT        |                                          |
+| sort_order | INT         |                                          |
+
+#### model_prices
+
+| 字段                | 类型          | 说明                   |
+| ------------------- | ------------- | ---------------------- |
+| id                  | UUID          |                        |
+| platform_id         | VARCHAR(32)   |                        |
+| model_name          | VARCHAR(128)  | 如 gpt-4o, deepseek-r1 |
+| input_price_per_1k  | DECIMAL(10,6) | 输入单价/1K tokens     |
+| output_price_per_1k | DECIMAL(10,6) | 输出单价/1K tokens     |
+| effective_from      | DATE          | 价格生效日             |
+
+#### api_keys
+
+| 字段           | 类型        | 说明             |
+| -------------- | ----------- | ---------------- |
+| id             | UUID        |                  |
+| user_id        | UUID        | FK               |
+| platform_id    | VARCHAR(32) |                  |
+| encrypted_key  | TEXT        | 加密存储         |
+| key_suffix     | CHAR(4)     | 展示用后四位     |
+| alias          | VARCHAR(64) | 备注名           |
+| balance_tokens | BIGINT      | 最近一次同步余额 |
+| expires_at     | DATE        | 可选             |
+| enabled        | BOOLEAN     |                  |
+| last_synced_at | TIMESTAMPTZ |                  |
+
+#### usage_records
+
+| 字段          | 类型          | 说明                       |
+| ------------- | ------------- | -------------------------- |
+| id            | UUID          |                            |
+| user_id       | UUID          |                            |
+| platform_id   | VARCHAR(32)   |                            |
+| model_name    | VARCHAR(128)  |                            |
+| token_count   | INT           | 正数表示消耗               |
+| input_tokens  | INT           | 可选                       |
+| output_tokens | INT           | 可选                       |
+| cost_amount   | DECIMAL(10,4) |                            |
+| source        | ENUM          | manual / api_sync / import |
+| api_key_id    | UUID          | 可空                       |
+| note          | TEXT          |                            |
+| occurred_at   | TIMESTAMPTZ   | 业务时间                   |
+| created_at    | TIMESTAMPTZ   |                            |
+
+**索引**
+
+```sql
+CREATE INDEX idx_records_user_time ON usage_records(user_id, occurred_at DESC);
+CREATE INDEX idx_records_user_platform ON usage_records(user_id, platform_id, occurred_at);
+```
+
+#### assistant_messages
+
+| 字段       | 类型        | 说明             |
+| ---------- | ----------- | ---------------- |
+| id         | UUID        |                  |
+| user_id    | UUID        |                  |
+| session_id | UUID        |                  |
+| role       | ENUM        | user / assistant |
+| content    | TEXT        |                  |
+| card_json  | JSONB       | 结构化卡片       |
+| created_at | TIMESTAMPTZ |                  |
+
+---
+
+## 5. API 规范
+
+### 5.1 通用约定
+
+- Base URL：`https://api.tokenledger.example.com/api/v1`
+- 认证：`Authorization: Bearer <JWT>`
+- 响应格式：
+
+```json
+{
+  "code": 0,
+  "message": "ok",
+  "data": { }
+}
+```
+
+- 错误码：`40001` 参数错误，`40101` 未登录，`40301` 无权限，`50001` 服务器错误
+
+### 5.2 分页
+
+```json
+{
+  "data": {
+    "items": [],
+    "page": 1,
+    "page_size": 20,
+    "total": 156
+  }
+}
+```
+
+---
+
+## 6. 关键业务流程
+
+### 6.1 绑定 API Key 并同步
+
+```mermaid
+sequenceDiagram
+    participant App
+    participant API
+    participant Queue
+    participant Platform as 各平台 OpenAPI
+
+    App->>API: POST /api-keys { platform, key }
+    API->>API: 校验格式 + 加密入库
+    API->>Queue: 投递 sync job
+    API-->>App: 201 创建成功
+    Queue->>Platform: 拉余额/用量
+    Platform-->>Queue: 返回数据
+    Queue->>API: 更新 balance + 写入 usage_records
+    API-->>App: 推送/WebSocket 同步完成
+```
+
+### 6.2 手动记账
+
+1. 用户填写平台、模型、Token
+2. 后端按 `model_prices` 计算 `cost_amount`（若无价格则让用户手填）
+3. 写入 `usage_records`，刷新首页/账单缓存
+
+### 6.3 月度额度预警
+
+- 定时任务：每日 9:00 检查 `本月已消耗 / monthly_quota_tokens`
+- 达到 80%、100% 推送通知
+- 首页剩余额度变红（< 10%）
+
+---
+
+## 7. UI 设计规范（对齐原型）
+
+| 元素     | 值                                 |
+| -------- | ---------------------------------- |
+| 主色     | `#6C5CE7`（紫）                    |
+| 辅色     | `#0984E3`（蓝，主按钮）            |
+| 背景     | `#F8F9FE`                          |
+| 卡片圆角 | 16px                               |
+| 卡片阴影 | `0 2px 12px rgba(108,92,231,0.08)` |
+| 正文字号 | 14–16sp                            |
+| 数字强调 | 24–28sp，Semibold                  |
+
+**组件清单**
+
+- `SummaryCard` × 2
+- `RecordListItem`
+- `PrimaryButton` / `SecondaryButton`
+- `ChatBubble` / `AssistantCard`
+- `FilterBar`（下拉 + 日历）
+- `DonutChart` / `LineChart`
+- `ApiKeyRow`（Switch）
+- `BottomTabBar`（5 Tab）
+
+---
+
+## 8. 目录结构（uni-app）
+
+```
+Token随手记/
+├── docs/
+│   ├── 依赖选型.md
+│   └── 代码规范.md
+├── pages/                      # 页面
+│   ├── index/                  # 首页
+│   ├── records/                # 记录
+│   ├── bills/                  # 账单
+│   ├── stats/                  # 统计
+│   ├── profile/                # 我的
+│   ├── assistant/              # AI 助手
+│   └── api-keys/               # API Key 管理
+├── components/                 # 业务组件
+├── store/                      # Vuex
+├── utils/                      # 工具（request 等）
+├── api/                        # 接口模块
+├── styles/variables.scss       # 设计 Token
+├── uni_modules/                # qiun-data-charts 等插件
+├── static/                     # 静态资源
+├── .eslintrc.cjs               # ESLint 跨端规则
+├── .cursor/rules/              # AI Agent 自动检查规则
+└── server/                     # 后端（待建）
+```
+
+---
+
+## 9. 开发排期（参考，2 人小团队）
+
+| 阶段                        | 周期   | 交付                          |
+| --------------------------- | ------ | ----------------------------- |
+| 需求冻结 + 设计稿           | 1 周   | 交互稿、API 文档定稿          |
+| 后端基础                    | 2 周   | 用户、记账 CRUD、账单统计 API |
+| 客户端框架 + 首页/记录/账单 | 2 周   | 3 Tab 可用                    |
+| API Key + 同步 Worker       | 1.5 周 | DeepSeek + OpenAI 打通        |
+| 统计页 + 图表               | 1 周   | 趋势、排行                    |
+| AI 助手                     | 1 周   | 3 个 Tool + 对话 UI           |
+| 个人中心 + 备份             | 0.5 周 | 导出 JSON                     |
+| 联调测试 + 上架准备         | 1 周   | TestFlight / 内测包           |
+
+**合计约 10 周**（可并行压缩至 7–8 周）
+
+---
+
+## 10. 测试要点
+
+| 场景            | 预期                                  |
+| --------------- | ------------------------------------- |
+| 无网络手动记账  | 本地队列，恢复后同步                  |
+| 错误 API Key    | 明确错误提示，不泄露 Key              |
+| 跨月账单        | 统计边界 00:00 时区一致（统一 UTC+8） |
+| 价格为 0 / 缺失 | 允许手填费用，不阻塞记账              |
+| 大列表性能      | 账单 1000+ 条滚动流畅（分页）         |
+| AI 助手胡说     | 仅基于 Tool 返回数据，禁止编造数字    |
+
+---
+
+## 11. 合规与安全
+
+- 《个人信息保护法》：隐私政策说明 Key 加密存储方式
+- App Store：若涉及 IAP 会员，需走苹果内购
+- **禁止**把用户 API Key 用于除「查余额/用量」外的任何调用
+- 提供「注销账号 + 删除全部 Key 与记录」能力
+
+---
+
+## 12. 后续迭代方向
+
+1. **自动记账**：Chrome 扩展 / 代理网关截获 API 响应中的 `usage`
+2. **预算共享**：家庭组、团队配额
+3. **智能建议**：「你 ChatGPT 用量偏高，建议换 DeepSeek 做草稿」
+4. **多币种**：USD/CNY 实时汇率
+5. **Widget**：iOS 桌面显示今日消耗
+
+---
+
+## 附录 A：首页接口示例
+
+**GET /api/v1/dashboard/summary**
+
+```json
+{
+  "code": 0,
+  "data": {
+    "month": "2026-03",
+    "consumed_tokens": 12450,
+    "consumed_amount": 124.50,
+    "quota_tokens": 100000,
+    "remaining_tokens": 87550,
+    "remaining_amount": 875.50,
+    "currency": "CNY"
+  }
+}
+```
+
+**GET /api/v1/records/recent?limit=5**
+
+```json
+{
+  "code": 0,
+  "data": {
+    "items": [
+      {
+        "id": "uuid",
+        "platform": "deepseek",
+        "platform_name": "DeepSeek",
+        "model_name": "deepseek-r1",
+        "token_count": 2320,
+        "cost_amount": 23.20,
+        "occurred_at": "2026-03-29T14:30:00+08:00",
+        "display_date": "今天"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 附录 B：平台枚举（第一版）
+
+| id       | 展示名           | 手动记账 | API 同步 |
+| -------- | ---------------- | -------- | -------- |
+| deepseek | DeepSeek         | ✓        | ✓        |
+| openai   | OpenAI (ChatGPT) | ✓        | ✓        |
+| claude   | Claude           | ✓        | 待调研   |
+| kimi     | Kimi             | ✓        | 待调研   |
+| qwen     | 通义千问         | ✓        | 待调研   |
+| other    | 其他             | ✓        | —        |
+
+---
+
+*文档随迭代更新；接口变更需同步移动端与服务端版本号。*

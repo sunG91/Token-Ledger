@@ -1,0 +1,54 @@
+{
+  "name": "token-suishouji",
+  "version": "1.0.0",
+  "description": "Token随手记 - AI Token 消耗记账工具",
+  "private": true,
+  "scripts": {
+    "lint": "eslint . --ext .js,.vue --max-warnings 0",
+    "lint:fix": "eslint . --ext .js,.vue --fix",
+    "format": "prettier --write \"**/*.{js,vue,json,scss,css,md}\"",
+    "format:check": "prettier --check \"**/*.{js,vue,json,scss,css,md}\"",
+    "stylelint": "stylelint \"**/*.{vue,scss,css}\" --ignore-path .gitignore",
+    "stylelint:fix": "stylelint \"**/*.{vue,scss,css}\" --fix --ignore-path .gitignore",
+    "check": "npm run lint && npm run format:check && npm run stylelint",
+    "check:fix": "npm run lint:fix && npm run format && npm run stylelint:fix",
+    "icons:export": "node scripts/export-platform-icons.js",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.13",
+    "luch-request": "^3.1.1",
+    "uview-ui": "^2.0.38",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.26.5",
+    "@iconify-json/logos": "^1.2.11",
+    "@vue/eslint-config-prettier": "^9.0.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-vue": "^9.32.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "pngjs": "^7.0.0",
+    "postcss-html": "^1.8.0",
+    "postcss-scss": "^4.0.9",
+    "prettier": "^3.4.2",
+    "simple-icons": "^16.22.0",
+    "stylelint": "^16.13.2",
+    "stylelint-config-recommended-scss": "^14.1.0",
+    "stylelint-config-recommended-vue": "^1.5.0",
+    "stylelint-config-standard": "^36.0.1"
+  },
+  "lint-staged": {
+    "*.{js,vue}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{vue,scss,css}": [
+      "stylelint --fix"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  }
+}

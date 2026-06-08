@@ -1,0 +1,95 @@
+.theme-dark-page,
+.theme-dark-root page {
+  background-color: #151522 !important;
+  color: #f1f2f6;
+}
+
+.theme-light-page,
+.theme-light-root page {
+  background-color: #f8f9fe;
+  color: #2d3436;
+}
+
+page,
+uni-page-body,
+uni-page-wrapper {
+  background-color: var(--app-page-bg, #f8f9fe) !important;
+}
+
+.theme-dark-page,
+.custom-tabbar-host.theme-dark-page,
+.page-tabbar-wrap.theme-dark-page {
+  .page-title-bar,
+  .nav-bar,
+  .home-header,
+  .assistant-header,
+  .chat-input-bar {
+    background-color: var(--app-page-bg, #151522) !important;
+  }
+
+  .u-tabbar__content {
+    background-color: var(--app-tab-bg, #1f2030) !important;
+  }
+
+  .u-tabbar-item__text {
+    color: var(--app-tab-inactive, #a0a4b8);
+  }
+
+  .home-header__title {
+    color: var(--app-text-primary, #f1f2f6) !important;
+  }
+
+  .stats-tab-bar {
+    background-color: var(--app-tab-pill-bg, rgba(31, 32, 48, 0.92)) !important;
+    box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .stats-tab-bar__text {
+    color: var(--app-text-secondary, #a0a4b8) !important;
+  }
+
+  .recent-item {
+    border-bottom-color: var(--app-border-color, rgba(255, 255, 255, 0.08)) !important;
+  }
+
+  .profile-menu-list__item,
+  .settings-cell:not(.settings-cell--last),
+  .settings-option-list__item:not(.settings-option-list__item--last) {
+    border-bottom-color: var(--app-border-color, rgba(255, 255, 255, 0.08)) !important;
+  }
+}
+
+.theme-dark-root,
+.theme-dark-page {
+  .u-popup__content {
+    background-color: var(--app-card-bg, #1f2030) !important;
+  }
+
+  .u-action-sheet {
+    background-color: var(--app-card-bg, #1f2030) !important;
+  }
+
+  .u-action-sheet__header__title {
+    color: var(--app-text-primary, #f1f2f6) !important;
+  }
+
+  .u-action-sheet__item-wrap__item__name {
+    color: var(--app-text-primary, #f1f2f6) !important;
+  }
+
+  .u-action-sheet__item-wrap__item__subname {
+    color: var(--app-text-secondary, #a0a4b8) !important;
+  }
+
+  .u-action-sheet--hover {
+    background-color: var(--app-muted-bg, #2a2b3d) !important;
+  }
+
+  .u-line {
+    border-color: var(--app-border-color, rgba(255, 255, 255, 0.08)) !important;
+  }
+
+  .bills-date-picker__tab--active {
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.28) !important;
+  }
+}

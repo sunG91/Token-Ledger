@@ -1,0 +1,44 @@
+$motion-duration-fast: 0.2s;
+$motion-duration-base: 0.28s;
+$motion-duration-slow: 0.36s;
+$motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+.page {
+  transition: color $motion-duration-base $motion-easing;
+}
+
+.page-shell-enter {
+  animation: page-shell-fade-in $motion-duration-base $motion-easing both;
+}
+
+@keyframes page-shell-fade-in {
+  from {
+    transform: translateY(8rpx);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.skeleton-block {
+  border-radius: 16rpx;
+  background-color: $color-bg-muted;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.assistant-chat__footer {
+  transition: padding-bottom $motion-duration-base $motion-easing;
+}
+

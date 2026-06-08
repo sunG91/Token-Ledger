@@ -1,0 +1,21 @@
+// 设置页等补充样式（主色板已由 variables.scss + appShellStyle 全局驱动）
+.theme-dark-page {
+  .settings-group__title,
+  .settings-cell__subtitle,
+  .settings-cell__value,
+  .settings-option-list__desc,
+  .about-card__title,
+  .about-card__paragraph,
+  .about-card__text,
+  .about-card__label,
+  .about-footer {
+    color: var(--app-text-secondary, #a0a4b8) !important;
+  }
+
+  .settings-cell__title,
+  .settings-option-list__title,
+  .about-card__heading,
+  .about-card__value {
+    color: var(--app-text-primary, #f1f2f6) !important;
+  }
+}

@@ -1,0 +1,20 @@
+/**
+ * 用户数据清理类别（本地 / 云端可按项勾选）
+ */
+export const DATA_CLEAR_CATEGORIES = {
+  RECORDS: 'records',
+  CHAT: 'chat',
+  VECTOR: 'vector',
+  PENDING: 'pending',
+  MONTHLY_PLAN: 'monthly_plan',
+  COST_CALIBRATION: 'cost_calibration',
+};
+
+export const DATA_CLEAR_CATEGORY_LIST = [
+  DATA_CLEAR_CATEGORIES.RECORDS,
+  DATA_CLEAR_CATEGORIES.CHAT,
+  DATA_CLEAR_CATEGORIES.VECTOR,
+  DATA_CLEAR_CATEGORIES.PENDING,
+  DATA_CLEAR_CATEGORIES.MONTHLY_PLAN,
+  DATA_CLEAR_CATEGORIES.COST_CALIBRATION,
+];

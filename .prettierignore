@@ -1,0 +1,8 @@
+node_modules/
+unpackage/
+dist/
+.hbuilderx/
+uni_modules/
+static/
+*.min.js
+*.min.css
