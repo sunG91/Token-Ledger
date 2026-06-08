@@ -5,6 +5,15 @@ unpackage/
 *.log
 .eslintcache
 .stylelintcache
-.cursor
-.idea
+
+# IDE / Agent / 编辑器本地配置（勿提交）
+.cursor/
+.idea/
+.vscode/
+*.code-workspace
+
+# 本地上传与临时文件
+uploads/
+tmp/
+temp/
 
