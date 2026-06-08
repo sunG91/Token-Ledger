@@ -5,3 +5,5 @@ unpackage/
 *.log
 .eslintcache
 .stylelintcache
+.cursor
+.idea
